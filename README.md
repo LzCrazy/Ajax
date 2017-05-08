@@ -106,5 +106,60 @@ CORS（Cross-Origin Resource Sharing），使用自定义HTTP头部让浏览器�
 
 无论同源请求还是跨域请求都是使用相同的接口，因此对于本地资源，最好使用相对URL，再访问远程资源时使用绝对URL，能够消除歧义，避免出现限制头部或者本地cookie信息等问题
 
+## Preflighted Requests
+是CORS通过一种叫做该方法的透明服务器验证机制支持开发者使用自定义的头部，GET或POST之外的方法，以及不同类型的主体内容。再使用
+下列高级选项发送请求时，就会向服务器发送一个Preflight请求，这种请求使用OPTONS方法
+* Origin：与简单的请求相同
+* Access-Control-Request-Method：请求自身使用的方法
+* Access-Control-Request-Headers：（可选）自定义的头部信息，多个头部以逗号分割开
+
+例如：使用一个待用自定义头部NCZ的使用POST方法发送的请求
+Origin：http://www.github.com
+Access-Control-Request-Method:POST
+Access-Control-Request-Headers:NCZ
+
+发送这个请求后，服务器可以决定是否允许这种类型的请求。服务器通过再响应中发送头部信息和浏览器进行沟通：
+* Access—Control-Allow-Origin：与简单的请求相同
+* Access—Control-Allow-Methods：允许的方法，多个用逗号隔开
+* Access—Control-Allow-Headers：允许的头部，多个用逗号隔开
+* Access—Control-Max-Age：应该将这个Preflight请求缓存多长时间（秒）
+
+## 带凭据的请求
+默认情况下，跨原请求不提供凭据（cookie，HTTP认证及客户端SSL证明）。通过将widthCredentials属性设置为true，可以指定某个请求应该发送凭据，如果服务器接收带凭据的请求，会使用以下HTTP头部来响应
+* Access-Control-Allow-Credentials：true
+
+## 其他跨域技术
+* 图像Ping
+
+是服务其进行简单，单项的跨域通讯的一种方法。请求的数据是通过查询字符串形式发送的，而响应可以是任意内容，
+但通常是像素图或204响应。通过图像Ping，浏览器得不到任何具体的数据，但通过侦听load和error事件，能知道
+是什么时候就收到响应
+```
+    var img=new Image();
+    img.onload=img.onerror=function(){
+        alert("Good Done");
+    };
+    img.src="https://www.github.com/LzCrazy/JavaScript/blob/master/summary.png
+```
+有两个缺点：1，只能发送GET请求 2，无法访问服务器的响应文本 所以它只能用于浏览器与服务器间的单项通讯
+
+* JSONP
+
+JSON  widh padding(填充式JSON或参数式JOSN)，和JSON差不多
+````
+    callback({"name","LzCrazy"});
+````
+JSONP由两部分组成，回调函数和数据。回调函数是当响应到来时应该再页面中调用的函数。回调函数的名字一般是再
+请求中指定的。而数据就是传入回调函数中的JSON数据
+````
+    http://freegeoip.net/json/?callback=handleResponse
+````
+JSONP是通过动态<script>元素来使用，使用时可以为src属性指定一个跨域URL，与图像Ping相比，它的优点在于能够
+直接访问响应文本，支持再浏览器与服务器之间双向通讯，不足有两点：
+首先，JOSNP是从其他域中加载代码执行，如果其他域不安全，很可能会在响应中夹带一些恶意代码
+其次，要确定JSONP请求是否失败不容易，可使用onerror事件处理程序或者使用计时器检测指定时间内是否接收到响应。
+
+* Comet
+
 
 

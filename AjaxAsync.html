@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajax Async</title>
+</head>
+<body>
+    <script>
+        function createXHR() {
+            if(typeof XMLHttpRequest != "undefined"){
+                return new XMLHttpRequest();
+            }else if(typeof ActiveXObject != "string"){
+                var versions=["MSXML2.XMLHttp.6.0","MSXML2.XMLHttp.3.0","MSXML2.XMLHttp"],i,len;
+                for(i=0,len=versions.length;i<len;i++) {
+                    try{
+                        var xhr = new ActiveXObject(versions[i]);
+                        arguments.callee.activeXString = versions[i];
+                        return xhr;
+                    }catch (ex){
+
+                    }
+                }
+                return new ActiveXObject(arguments.callee.activeXString);
+
+            }else{
+                throw  new Error("xhr object avaliable");
+            }
+        }
+        var xhr = createXHR();
+        xhr.onreadystatechange = function (data) {
+            if(xhr.readyState == 4) {
+                if((xhr.status >= 200 && xhr.status < 300)|| xhr.status == 304) {
+                    alert(xhr.responseText);
+                }else {
+                    alert("error" + xhr.status);
+                }
+            }
+        };
+        xhr.open("get", "data/Async.txt", true);
+        xhr.send(null);
+    </script>
+</body>
+</html>

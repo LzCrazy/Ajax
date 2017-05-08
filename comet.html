@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>comet跨域</title>
+</head>
+<body>
+    <script>
+
+        function createStreamClient(url,progress,finished) {
+            var xhr=new XMLHttpRequest(),received=0;
+            xhr.open("get", url, true);
+            xhr.onreadystatechange=function () {
+                var result;
+                if(xhr.readyState == 3) {
+                    result = xhr.responseText.substring(received);
+                    received += result.length;
+                    progress(result);
+                }else if(xhr.readyState == 4) {
+                    finished(xhr.responseText);
+                }
+            };
+            xhr.send(null);
+            return xhr;
+        }
+        var client=createStreamClient("data/stream.php",function (data) {
+            alert("received" + data);
+        },function (data) {
+            alert("ok");
+        })
+    </script>
+</body>
+</html>
